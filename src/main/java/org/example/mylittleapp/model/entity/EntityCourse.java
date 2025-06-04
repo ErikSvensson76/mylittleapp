@@ -18,8 +18,6 @@ public class EntityCourse {
   private String id;
   @Column(name = LANGUAGE, unique = true)
   private String language;
-  @Column(name = DIFFICULTY)
-  private String difficulty;
 
   @OneToMany(
       cascade = {CascadeType.DETACH, CascadeType.REFRESH},
@@ -42,14 +40,6 @@ public class EntityCourse {
 
   public void setLanguage(String language) {
     this.language = language;
-  }
-
-  public String getDifficulty() {
-    return difficulty;
-  }
-
-  public void setDifficulty(String difficulty) {
-    this.difficulty = difficulty;
   }
 
   public List<EntityTopic> getTopics() {
@@ -92,11 +82,11 @@ public class EntityCourse {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof EntityCourse that)) return false;
-    return Objects.equals(id, that.id) && Objects.equals(language, that.language) && Objects.equals(difficulty, that.difficulty);
+    return Objects.equals(id, that.id) && Objects.equals(language, that.language);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, language, difficulty);
+    return Objects.hash(id, language);
   }
 }
