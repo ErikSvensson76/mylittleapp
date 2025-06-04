@@ -1,7 +1,8 @@
 package org.example.mylittleapp.service;
 
 import org.example.mylittleapp.model.dto.Binary;
-import org.example.mylittleapp.service.dao.EntityFileService;
+import org.example.mylittleapp.service.converter.DtoConverterService;
+import org.example.mylittleapp.service.dao.EntityBinaryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,66 +12,48 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class BinaryService extends DtoConverterService {
+public class BinaryService {
 
-  private final EntityFileService entityFileService;
+  private final EntityBinaryService entityBinaryService;
+  private final DtoConverterService converterService;
 
 
-  public BinaryService(EntityFileService entityFileService) {
-    this.entityFileService = entityFileService;
+  public BinaryService(
+    EntityBinaryService entityBinaryService,
+    DtoConverterService converterService)
+  {
+    this.entityBinaryService = entityBinaryService;
+    this.converterService = converterService;
   }
-
 
   public Binary findByFileName(String fileName) {
-    return entityToBinary(entityFileService.findByFileName(fileName));
+    return converterService.entityToBinary(entityBinaryService.findByFileName(fileName));
   }
-
-
-  public List<Binary> findByParentId(String id) {
-    return entityFileService.findByParentId(id).stream()
-        .filter(Objects::nonNull)
-        .map(this::entityToBinary)
-        .toList();
-  }
-
 
   public String saveBinary(String parentId, MultipartFile file) {
-    return entityFileService.save(file,parentId).getUrl();
+    return entityBinaryService.save(file,parentId).getUrl();
   }
 
 
   public Binary findById(String id) {
-    return entityToBinary(entityFileService.findById(id));
+    return converterService.entityToBinary(entityBinaryService.findById(id));
   }
 
 
   public List<Binary> findAll() {
-    return entityFileService.findAll().stream()
+    return entityBinaryService.findAll().stream()
         .filter(Objects::nonNull)
-        .map(this::entityToBinary)
+        .map(converterService::entityToBinary)
         .toList();
   }
-
-
-  public Binary save(MultipartFile multipartFile) {
-    return entityToBinary(entityFileService.save(multipartFile));
-  }
-
-
-  public List<Binary> saveAll(List<MultipartFile> multipartFiles) {
-    return entityFileService.saveAll(multipartFiles).stream()
-        .filter(Objects::nonNull)
-        .map(this::entityToBinary)
-        .toList();
-  }
-
 
   public boolean delete(String id) {
-    return entityFileService.delete(id);
+    return entityBinaryService.delete(id);
   }
 
 
   public boolean deleteAll(List<String> ids) {
-    return entityFileService.deleteAll(ids);
+    return entityBinaryService.deleteAll(ids);
   }
+
 }
