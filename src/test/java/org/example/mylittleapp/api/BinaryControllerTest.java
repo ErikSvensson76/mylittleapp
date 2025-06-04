@@ -80,7 +80,11 @@ class BinaryControllerTest {
 
 	}
 
+	/* Todo: Fix later
 	@Test
 	void getBinary() {
+
 	}
+
+	 */
 }
