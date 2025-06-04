@@ -21,6 +21,8 @@ public class EntityMarkdown {
   @Basic(fetch = FetchType.LAZY)
   @Column(name = MARKDOWN_CONTENT)
   private String markdownContent;
+  @Column(name = CURSOR_POS)
+  private Integer cursorPos;
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = FK_LESSON)
   private EntityLesson lesson;
@@ -68,6 +70,14 @@ public class EntityMarkdown {
 
   public void setLesson(EntityLesson lesson) {
     this.lesson = lesson;
+  }
+
+  public Integer getCursorPos() {
+    return cursorPos;
+  }
+
+  public void setCursorPos(Integer cursorPos) {
+    this.cursorPos = cursorPos;
   }
 
   @Override
