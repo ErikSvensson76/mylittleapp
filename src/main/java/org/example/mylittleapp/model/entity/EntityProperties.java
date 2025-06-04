@@ -7,7 +7,6 @@ public class EntityProperties {
     public static final String TABLE = "course";
     public static final String PK_COURSE = "pk_course";
     public static final String LANGUAGE = "language";
-    public static final String DIFFICULTY = "difficulty";
   }
 
 
@@ -35,11 +34,12 @@ public class EntityProperties {
     public static final String PK_MARKDOWN = "pk_markdown";
     public static final String ORDER = "markdown_order";
     public static final String MARKDOWN_CONTENT = "markdown_content";
+    public static final String CURSOR_POS = "cursor_pos";
     public static final String FK_LESSON = "fk_lesson";
   }
 
   public static class EntityBinaryProperties{
-    public static final String TABLE = "pk_binary_asset";
+    public static final String TABLE = "binary_asset";
     public static final String PK_BINARY_ASSET = "pk_binary_asset";
     public static final String FILE_NAME = "file_name";
     public static final String MIME_TYPE = "mime_type";
