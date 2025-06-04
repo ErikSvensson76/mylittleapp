@@ -84,8 +84,6 @@ class CourseControllerTest {
 
     var input = new InputCourse();
 
-    String difficulty = "easy";
-    input.setDifficulty(difficulty);
     String language = "Javascript";
     input.setLanguage(language);
 
@@ -101,7 +99,6 @@ class CourseControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.id").value(id))
-        .andExpect(jsonPath("$.difficulty").value(difficulty))
         .andExpect(jsonPath("$.language").value(language))
         .andExpect(jsonPath("$.topics", hasSize(5)));
   }

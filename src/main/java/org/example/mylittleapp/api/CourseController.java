@@ -32,7 +32,7 @@ public class CourseController {
   }
 
   @PostMapping()
-  public ResponseEntity<Course> addCourse(@RequestBody @Validated(OnPost.class) @Valid InputCourse course) {
+  public ResponseEntity<InputCourse> addCourse(@RequestBody @Validated(OnPost.class) @Valid InputCourse course) {
     return ResponseEntity.ok(
         courseService.save(course)
     );
@@ -46,7 +46,7 @@ public class CourseController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Course> updateCourse(
+  public ResponseEntity<InputCourse> updateCourse(
       @PathVariable String id,
       @Validated(OnPut.class) @RequestBody @Valid InputCourse course) {
     course.setId(id);
