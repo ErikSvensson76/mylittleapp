@@ -11,14 +11,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -53,34 +48,7 @@ class EntityMarkdownServiceDaoTest {
 
 
 
-  @Test
-  void saveMarkdownWithFile() {
-    Resource resource = new ClassPathResource("test.md");
-    assertNotNull(resource);
-    MultipartFile file = null;
-    try{
-      file = new MockMultipartFile(
-          "markdownTest",
-          "test.md",
-          "text/markdown",
-          resource.getInputStream()
-      );
-    }catch (Exception e){
-      log.error(e.getMessage());
-    }
-    assertNotNull(file);
 
-    InputMarkdown input = new InputMarkdown();
-    input.setOrder(1);
-    input.setMarkdownFile(file);
-
-    EntityMarkdown result = underTest.save(input);
-    assertNotNull(result);
-    assertNotNull(result.getId());
-    assertEquals(input.getOrder(), result.getOrder());
-    assertNotNull(result.getMarkdownContent());
-
-  }
 
   @Test
   void saveAllMarkdown() {
@@ -99,11 +67,7 @@ class EntityMarkdownServiceDaoTest {
     InputMarkdown input = new InputMarkdown();
     input.setId(markdown.getId());
     input.setOrder(markdown.getOrder());
-    input.setMarkdownContent(Arrays.asList(
-        "# HelloWorld",
-        "## Foo",
-        "### Bar"
-    ));
+    input.setMarkdownContent("# HelloWorld\n## Foo\n### Bar");
 
     EntityMarkdown result = underTest.save(input);
     assertNotNull(result);
