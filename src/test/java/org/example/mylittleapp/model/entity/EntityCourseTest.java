@@ -24,7 +24,6 @@ class EntityCourseTest {
     );
     assertNotNull(course);
     assertNotNull(course.getId());
-    assertNotNull(course.getDifficulty());
     assertNotNull(course.getTopics());
     assertNotNull(course.getLanguage());
     assertEquals(5, course.getTopics().size());

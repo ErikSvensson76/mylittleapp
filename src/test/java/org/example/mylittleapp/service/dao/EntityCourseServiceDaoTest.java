@@ -39,7 +39,6 @@ class EntityCourseServiceDaoTest {
 
     assertNotNull(result);
     assertNotNull(result.getId());
-    assertEquals(inputCourse.getDifficulty(), result.getDifficulty());
     assertEquals(inputCourse.getLanguage(), result.getLanguage());
     assertTrue(result.getTopics().isEmpty());
   }
@@ -61,15 +60,12 @@ class EntityCourseServiceDaoTest {
     EntityCourse course = em.persist(testUtils.getEntityCourse(false));
     InputCourse inputCourse = new InputCourse();
     inputCourse.setId(course.getId());
-    String easy = "Easy";
-    inputCourse.setDifficulty(easy);
     String language = "Java";
     inputCourse.setLanguage(language);
 
     EntityCourse result = underTest.save(inputCourse);
     assertNotNull(result);
     assertEquals(inputCourse.getId(), result.getId());
-    assertEquals(easy, result.getDifficulty());
     assertEquals(language, result.getLanguage());
     assertTrue(result.getTopics().isEmpty());
   }
@@ -85,7 +81,6 @@ class EntityCourseServiceDaoTest {
     EntityCourse result = underTest.save(inputCourse);
     assertNotNull(result);
     assertNotNull(result.getId());
-    assertEquals(inputCourse.getDifficulty(), result.getDifficulty());
     assertEquals(inputCourse.getLanguage(), result.getLanguage());
     assertEquals(3, result.getTopics().size());
     assertTrue(result.getTopics().stream().allMatch(t -> t.getCourse().equals(result)));
@@ -104,7 +99,6 @@ class EntityCourseServiceDaoTest {
 
     InputCourse inputCourse = new InputCourse();
     inputCourse.setId(course.getId());
-    inputCourse.setDifficulty(course.getDifficulty());
     inputCourse.setLanguage(course.getLanguage());
 
     List<InputTopic> topics = course.getTopics().stream()

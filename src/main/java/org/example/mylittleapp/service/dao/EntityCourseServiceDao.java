@@ -1,6 +1,5 @@
 package org.example.mylittleapp.service.dao;
 
-import org.example.mylittleapp.exception.DuplicatePropertyException;
 import org.example.mylittleapp.exception.NoEntityFoundException;
 import org.example.mylittleapp.model.entity.EntityCourse;
 import org.example.mylittleapp.model.input.InputCourse;
@@ -10,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,14 +48,9 @@ public class EntityCourseServiceDao implements EntityCourseService {
     if(inputCourse.getId() == null){
       entityCourse = new EntityCourse();
       entityCourse.setLanguage(inputCourse.getLanguage().trim());
-      entityCourse.setDifficulty(inputCourse.getDifficulty());
       entityCourse = repository.save(entityCourse);
     }else {
       entityCourse = findById(inputCourse.getId());
-      entityCourse.setDifficulty(inputCourse.getDifficulty().trim());
-      if(isDuplicateLanguage(entityCourse, inputCourse)){
-        throw new DuplicatePropertyException("Duplicate language: " + inputCourse.getLanguage());
-      }
       entityCourse.setLanguage(inputCourse.getLanguage().trim());
     }
     if(inputCourse.getTopics() != null && !inputCourse.getTopics().isEmpty()){
@@ -66,16 +59,6 @@ public class EntityCourseServiceDao implements EntityCourseService {
       );
     }
     return repository.save(entityCourse);
-  }
-
-  public boolean isDuplicateLanguage(EntityCourse current, InputCourse inputCourse) {
-    Optional<EntityCourse> optional = repository.findByLanguage(inputCourse.getLanguage());
-    if(optional.isPresent()){
-      EntityCourse course = optional.get();
-      return course.getLanguage().equals(inputCourse.getLanguage().trim())
-          && !current.getId().equals(course.getId());
-    }
-    return false;
   }
 
   @Override
