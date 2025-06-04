@@ -1,6 +1,5 @@
 package org.example.mylittleapp.service.dao;
 
-import org.example.mylittleapp.exception.DuplicatePropertyException;
 import org.example.mylittleapp.exception.NoEntityFoundException;
 import org.example.mylittleapp.model.entity.EntityCourse;
 import org.example.mylittleapp.model.entity.EntityTopic;
@@ -11,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,9 +55,6 @@ public class EntityTopicServiceDao implements EntityTopicService {
       entityTopic = findById(inputTopic.getId());
       entityTopic.setDescription(inputTopic.getDescription().trim());
       entityTopic.setOrder(inputTopic.getOrder());
-      if(isDuplicateTopic(entityTopic, inputTopic)){
-        throw new DuplicatePropertyException("Duplicate topic: " + inputTopic.getTopic());
-      }
       entityTopic.setTopic(inputTopic.getTopic().trim());
     }
     if(inputTopic.getLessons() != null && !inputTopic.getLessons().isEmpty()){
@@ -69,16 +64,6 @@ public class EntityTopicServiceDao implements EntityTopicService {
 
     }
     return repository.save(entityTopic);
-  }
-
-  public boolean isDuplicateTopic(EntityTopic current, InputTopic input){
-    Optional<EntityTopic> optional = repository.findByTopic(input.getTopic());
-    if(optional.isPresent()){
-      EntityTopic topic = optional.get();
-      return topic.getTopic().equals(current.getTopic().trim())
-          && !current.getId().equals(topic.getId());
-    }
-    return false;
   }
 
   @Override
