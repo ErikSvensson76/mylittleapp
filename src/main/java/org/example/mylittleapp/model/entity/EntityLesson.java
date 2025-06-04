@@ -35,6 +35,17 @@ public class EntityLesson {
   )
   private List<EntityMarkdown> slides;
 
+  public EntityLesson(String id, String lesson, Integer order, EntityTopic topic, List<EntityMarkdown> slides) {
+    this.id = id;
+    this.lesson = lesson;
+    this.order = order;
+    this.topic = topic;
+    this.slides = slides;
+  }
+
+  public EntityLesson() {
+  }
+
   public String getId() {
     return id;
   }
