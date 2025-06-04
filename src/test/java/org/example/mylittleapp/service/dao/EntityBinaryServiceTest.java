@@ -1,6 +1,8 @@
 package org.example.mylittleapp.service.dao;
 
+import org.example.mylittleapp.TestUtils;
 import org.example.mylittleapp.model.entity.EntityBinary;
+import org.example.mylittleapp.service.UrlMap;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +28,15 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestEntityManager
 @Transactional
 @DirtiesContext
-class EntityFileServiceTest {
+class EntityBinaryServiceTest {
 
-  private static final Logger log = LoggerFactory.getLogger(EntityFileServiceTest.class);
+  private static final Logger log = LoggerFactory.getLogger(EntityBinaryServiceTest.class);
   @Autowired
-  EntityFileService underTest;
+  EntityBinaryService underTest;
   @Autowired TestEntityManager em;
+  TestUtils testUtils = TestUtils.getInstance();
+  @Autowired
+  UrlMap urlMap;
 
 
 
@@ -51,15 +56,23 @@ class EntityFileServiceTest {
     return null;
   }
 
+
   @Test
   void saveSingleFile(){
-    EntityBinary result = underTest.save(getMultiPartFile());
+    MultipartFile file = getMultiPartFile();
+    assertNotNull(file);
+
+    String parentId = em.persist(testUtils.getEntityMarkdown(false)).getId();
+    String url = "http://localhost:8080/api/resource/test.jpg";
+
+    EntityBinary result = underTest.save(getMultiPartFile(), parentId);
     assertNotNull(result);
     assertNotNull(result.getId());
     assertEquals("test.jpg", result.getFileName());
-    assertEquals("http://localhost:8080/asset/test.jpg", result.getUrl());
+    assertEquals(url, result.getUrl());
     assertNotNull(result.getBinaryData());
-    assertNull(result.getParent());
+    assertNotNull(result.getParent());
+    assertTrue(urlMap.getUrls(parentId).get().contains(url));
   }
 
 }

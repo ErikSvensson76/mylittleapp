@@ -6,6 +6,8 @@ import org.example.mylittleapp.exception.NoEntityFoundException;
 import org.example.mylittleapp.exception.RuntimeIOException;
 import org.example.mylittleapp.model.entity.EntityBinary;
 import org.example.mylittleapp.model.entity.EntityMarkdown;
+import org.example.mylittleapp.service.event.EventOperationType;
+import org.example.mylittleapp.service.event.UrlMapUpdateEventPublisher;
 import org.example.mylittleapp.service.repos.EntityBinaryRepo;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -14,25 +16,29 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedInputStream;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @Validated
-public class EntityFileService {
+public class EntityBinaryService {
 
   private final EntityBinaryRepo repository;
   private final EntityMarkdownService markdownService;
   private final BaseUrl baseUrl;
+  private final UrlMapUpdateEventPublisher publisher;
 
-  public EntityFileService(EntityBinaryRepo repository, EntityMarkdownService markdownService, BaseUrl baseUrl) {
+  public EntityBinaryService(
+		EntityBinaryRepo repository,
+		EntityMarkdownService markdownService,
+		BaseUrl baseUrl, UrlMapUpdateEventPublisher publisher)
+  {
     this.repository = repository;
     this.markdownService = markdownService;
-    this.baseUrl = baseUrl;
-  }
+		this.baseUrl = baseUrl;
+		this.publisher = publisher;
+	}
 
 
   public EntityBinary findById(String id) {
@@ -46,10 +52,10 @@ public class EntityFileService {
   }
 
 
-  public EntityBinary save(@NotNull MultipartFile multipartFile) {
+  public EntityBinary internalSave(@NotNull MultipartFile multipartFile) {
     if(multipartFile.isEmpty()) throw new IllegalArgumentException("MultipartFile is empty");
-    if(multipartFile.getContentType() == null) throw new IllegalArgumentException("MultipartFile content type is null");
-    if(!multipartFile.getContentType().startsWith("image")) {
+    String contentType = multipartFile.getContentType();
+    if(!contentType.startsWith("image")) {
       throw new IllegalArgumentException("Only images supported");
     }
 
@@ -72,37 +78,35 @@ public class EntityFileService {
     binary.setMimeType(multipartFile.getContentType());
     binary.setBinaryData(bytes);
     String originalFilename = multipartFile.getOriginalFilename();
-    if(originalFilename != null && !originalFilename.isEmpty()){
+
+    if(!originalFilename.isEmpty()){
       binary.setFileName(originalFilename);
     }else{
       throw new IllegalArgumentException("Filename is null or empty");
     }
-    String path = Paths.get(baseUrl.url(),"asset",originalFilename).toString();
+    String path = baseUrl.url() + "/api/resource/" + binary.getFileName();
     binary.setUrl(path);
 
     return repository.save(binary);
   }
 
   public EntityBinary save(@NotNull MultipartFile multipartFile, @NotNull String parentId){
-    EntityBinary binary = save(multipartFile);
+    EntityBinary binary = internalSave(multipartFile);
     EntityMarkdown markdown = markdownService.findById(parentId);
     binary.setParent(markdown);
+    publisher.publish(parentId, EventOperationType.UPDATE, binary.getUrl());
     return repository.save(binary);
-  }
-
-
-  public List<EntityBinary> saveAll(List<MultipartFile> multipartFiles) {
-    if(multipartFiles == null) throw new IllegalArgumentException("MultipartFiles is null");
-    return multipartFiles.stream()
-        .filter(Objects::nonNull)
-        .map(this::save)
-        .collect(Collectors.toList());
   }
 
 
   public boolean delete(String id) {
     EntityBinary entityBinary = findById(id);
+    String parentId = entityBinary.getParent().getId();
+    String url = entityBinary.getUrl();
     entityBinary.setParent(null);
+
+    publisher.publish(parentId, EventOperationType.REMOVE, url);
+
     repository.delete(entityBinary);
     return repository.findById(id).isEmpty();
   }
@@ -120,10 +124,5 @@ public class EntityFileService {
   public EntityBinary findByFileName(String fileName) {
     return repository.findByFileName(fileName)
         .orElseThrow(() -> new NoEntityFoundException("No entity of type EntityBinary found with fileName: " + fileName));
-  }
-
-
-  public List<EntityBinary> findByParentId(String id) {
-    return repository.findByParentId(id);
   }
 }
