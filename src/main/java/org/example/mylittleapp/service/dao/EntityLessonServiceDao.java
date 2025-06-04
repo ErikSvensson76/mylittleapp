@@ -1,6 +1,5 @@
 package org.example.mylittleapp.service.dao;
 
-import org.example.mylittleapp.exception.DuplicatePropertyException;
 import org.example.mylittleapp.exception.NoEntityFoundException;
 import org.example.mylittleapp.model.entity.EntityLesson;
 import org.example.mylittleapp.model.entity.EntityTopic;
@@ -11,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,9 +53,6 @@ public class EntityLessonServiceDao implements EntityLessonService {
     }else{
       entityLesson = findById(inputLesson.getId());
       entityLesson.setOrder(inputLesson.getOrder());
-      if(isDuplicateLesson(entityLesson, inputLesson)){
-        throw new DuplicatePropertyException("Duplicate lesson: " + inputLesson.getLesson());
-      }
       entityLesson.setLesson(inputLesson.getLesson().trim());
     }
     if(inputLesson.getSlides() != null && !inputLesson.getSlides().isEmpty()){
@@ -66,16 +61,6 @@ public class EntityLessonServiceDao implements EntityLessonService {
       );
     }
     return repository.save(entityLesson);
-  }
-
-  public boolean isDuplicateLesson(EntityLesson current, InputLesson input){
-    Optional<EntityLesson> optional = repository.findById(input.getId());
-    if(optional.isPresent()){
-      EntityLesson lesson = optional.get();
-      return lesson.getLesson().equals(current.getLesson().trim())
-          && !current.getId().equals(lesson.getId());
-    }
-    return false;
   }
 
   @Override

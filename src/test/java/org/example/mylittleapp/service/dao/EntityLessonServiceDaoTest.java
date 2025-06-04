@@ -93,11 +93,7 @@ class EntityLessonServiceDaoTest {
           InputMarkdown m = new InputMarkdown();
           m.setId(markdown.getId());
           m.setOrder(markdown.getOrder());
-          List<String> md = markdown.getMarkdownContent()
-              .lines()
-              .map(s -> s.replace("\n", "").replace("\r", ""))
-              .collect(Collectors.toList());
-          m.setMarkdownContent(md);
+          m.setMarkdownContent(markdown.getMarkdownContent());
           return m;
         }).collect(Collectors.toList());
       input.setSlides(slides);
