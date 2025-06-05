@@ -1,9 +1,8 @@
 package org.example.mylittleapp.service;
 
 import org.example.mylittleapp.model.dto.Markdown;
-import org.example.mylittleapp.model.entity.EntityBinary;
 import org.example.mylittleapp.model.input.InputMarkdown;
-import org.example.mylittleapp.service.dao.EntityFileService;
+import org.example.mylittleapp.service.converter.DtoConverterService;
 import org.example.mylittleapp.service.dao.EntityMarkdownService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,43 +13,42 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class MarkdownServiceImpl extends DtoConverterService implements MarkdownService {
+public class MarkdownServiceImpl implements MarkdownService {
 
   private final EntityMarkdownService markdownService;
-  private final EntityFileService entityFileService;
+  private final DtoConverterService converterService;
 
-  public MarkdownServiceImpl(EntityMarkdownService markdownService, EntityFileService entityFileService) {
+  public MarkdownServiceImpl(EntityMarkdownService markdownService, DtoConverterService converterService) {
     this.markdownService = markdownService;
-    this.entityFileService = entityFileService;
+    this.converterService = converterService;
   }
 
   @Override
   public Markdown findById(String id) {
-    EntityBinary[] entityBinaries = entityFileService.findByParentId(id)
-        .toArray(EntityBinary[]::new);
-
-    return entityToMarkdown(markdownService.findById(id), entityBinaries);
+    return converterService.entityToMarkdown(
+        markdownService.findById(id)
+    );
   }
 
   @Override
   public List<Markdown> findAll() {
     return markdownService.findAll().stream()
-        .filter(Objects::nonNull)
-        .map(this::entityToMarkdown)
-        .toList();
+      .filter(Objects::nonNull)
+      .map(converterService::entityToMarkdown)
+      .toList();
   }
 
   @Override
-  public Markdown save(InputMarkdown inputMarkdown) {
-    return entityToMarkdown(markdownService.save(inputMarkdown));
+  public InputMarkdown save(InputMarkdown inputMarkdown) {
+    return converterService.entityToInputMarkdown(markdownService.save(inputMarkdown));
   }
 
   @Override
-  public List<Markdown> saveAll(List<InputMarkdown> inputMarkdowns) {
+  public List<InputMarkdown> saveAll(List<InputMarkdown> inputMarkdowns) {
     return markdownService.saveAll(inputMarkdowns).stream()
         .filter(Objects::nonNull)
-        .map(this::entityToMarkdown)
-        .sorted(Comparator.comparing(Markdown::getOrder))
+        .map(converterService::entityToInputMarkdown)
+        .sorted(Comparator.comparing(InputMarkdown::getOrder))
         .toList();
   }
 
