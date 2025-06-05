@@ -5,6 +5,7 @@ import org.example.mylittleapp.model.dto.Topic;
 import org.example.mylittleapp.model.input.InputTopic;
 import org.example.mylittleapp.service.TopicService;
 import org.example.mylittleapp.validation.OnPost;
+import org.example.mylittleapp.validation.OnPut;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class TopicController {
   }
 
   @PostMapping()
-  public ResponseEntity<Topic> addTopic(@RequestBody @Validated(OnPost.class) @Valid InputTopic topic) {
+  public ResponseEntity<InputTopic> addTopic(@RequestBody @Validated(OnPost.class) @Valid InputTopic topic) {
     return ResponseEntity.ok(topicService.save(topic));
   }
 
@@ -38,9 +39,9 @@ public class TopicController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Topic> updateTopic(
+  public ResponseEntity<InputTopic> updateTopic(
       @PathVariable String id,
-      @RequestBody @Validated(OnPost.class) @Valid InputTopic topic) {
+      @RequestBody @Validated(OnPut.class) InputTopic topic) {
     topic.setId(id);
     return ResponseEntity.ok(topicService.save(topic));
   }
