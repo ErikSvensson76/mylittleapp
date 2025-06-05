@@ -2,6 +2,7 @@ package org.example.mylittleapp.service;
 
 import org.example.mylittleapp.model.dto.Lesson;
 import org.example.mylittleapp.model.input.InputLesson;
+import org.example.mylittleapp.service.converter.DtoConverterService;
 import org.example.mylittleapp.service.dao.EntityLessonService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,44 +13,46 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class LessonServiceImpl extends DtoConverterService implements LessonService {
+public class LessonServiceImpl implements LessonService {
 
   private final EntityLessonService entityLessonService;
+  private final DtoConverterService converterService;
 
-  public LessonServiceImpl(EntityLessonService entityLessonService) {
+  public LessonServiceImpl(EntityLessonService entityLessonService, DtoConverterService converterService) {
     this.entityLessonService = entityLessonService;
+    this.converterService = converterService;
   }
 
   @Override
   public Lesson findByLesson(String lesson) {
-    return entityToLesson(entityLessonService.findByLesson(lesson));
+    return converterService.entityToLesson(entityLessonService.findByLesson(lesson));
   }
 
   @Override
   public Lesson findById(String id) {
-    return entityToLesson(entityLessonService.findById(id));
+    return converterService.entityToLesson(entityLessonService.findById(id));
   }
 
   @Override
   public List<Lesson> findAll() {
     return entityLessonService.findAll().stream()
         .filter(Objects::nonNull)
-        .map(this::entityToLesson)
+        .map(converterService::entityToLesson)
         .sorted(Comparator.comparing(Lesson::order))
         .toList();
   }
 
   @Override
-  public Lesson save(InputLesson inputLesson) {
-    return entityToLesson(entityLessonService.save(inputLesson));
+  public InputLesson save(InputLesson inputLesson) {
+    return converterService.entityToInputLesson(entityLessonService.save(inputLesson));
   }
 
   @Override
-  public List<Lesson> saveAll(List<InputLesson> inputLessons) {
+  public List<InputLesson> saveAll(List<InputLesson> inputLessons) {
     return entityLessonService.saveAll(inputLessons).stream()
         .filter(Objects::nonNull)
-        .map(this::entityToLesson)
-        .sorted(Comparator.comparing(Lesson::order))
+        .map(converterService::entityToInputLesson)
+        .sorted(Comparator.comparing(InputLesson::getOrder))
         .toList();
   }
 
