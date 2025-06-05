@@ -6,23 +6,32 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Positive;
 import org.example.mylittleapp.validation.OnPost;
+import org.example.mylittleapp.validation.OnPut;
 import org.example.mylittleapp.validation.annotations.UniqueLesson;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
-@Validated
+@UniqueLesson(groups = {OnPost.class, OnPut.class})
 public class InputLesson {
 
   @Null(groups = OnPost.class)
   private String id;
   @NotBlank(message = "This field is mandatory.")
-  @UniqueLesson(groups = OnPost.class)
   private String lesson;
   @NotNull(message = "This field is mandatory.")
   @Positive(message = "This field requires a positive value.")
   private Integer order;
-  private List<@Valid @NotNull InputMarkdown> slides;
+  private List<@NotNull InputMarkdown> slides;
+
+  public InputLesson(String id, String lesson, Integer order, List<@Valid @NotNull InputMarkdown> slides) {
+    this.id = id;
+    this.lesson = lesson;
+    this.order = order;
+    this.slides = slides;
+  }
+
+  public InputLesson() {
+  }
 
   public String getId() {
     return id;

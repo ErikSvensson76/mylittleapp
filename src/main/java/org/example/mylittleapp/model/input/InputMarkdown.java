@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Positive;
 import org.example.mylittleapp.validation.OnPost;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,8 +17,20 @@ public class InputMarkdown implements Serializable {
   @NotBlank(message = "This field is mandatory.")
   @Positive(message = "This field requires a positive value.")
   private Integer order;
-  private List<String> markdownContent;
-  private MultipartFile markdownFile;
+  private String markdownContent;
+  private Integer cursorPos;
+  private List<String> urls;
+
+  public InputMarkdown(String id, Integer order, String markdownContent, Integer cursorPos, List<String> urls) {
+    this.id = id;
+    this.order = order;
+    this.markdownContent = markdownContent;
+    this.cursorPos = cursorPos;
+    this.urls = urls;
+  }
+
+  public InputMarkdown() {
+  }
 
   public String getId() {
     return id;
@@ -37,19 +48,27 @@ public class InputMarkdown implements Serializable {
     this.order = order;
   }
 
-  public List<String> getMarkdownContent() {
+  public String getMarkdownContent() {
     return markdownContent;
   }
 
-  public void setMarkdownContent(List<String> markdownContent) {
+  public void setMarkdownContent(String markdownContent) {
     this.markdownContent = markdownContent;
   }
 
-  public MultipartFile getMarkdownFile() {
-    return markdownFile;
+  public Integer getCursorPos() {
+    return cursorPos;
   }
 
-  public void setMarkdownFile(MultipartFile markdownFile) {
-    this.markdownFile = markdownFile;
+  public void setCursorPos(Integer cursorPos) {
+    this.cursorPos = cursorPos;
+  }
+
+  public List<String> getUrls() {
+    return urls;
+  }
+
+  public void setUrls(List<String> urls) {
+    this.urls = urls;
   }
 }

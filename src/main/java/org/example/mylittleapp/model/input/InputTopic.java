@@ -3,6 +3,7 @@ package org.example.mylittleapp.model.input;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import org.example.mylittleapp.validation.OnPost;
+import org.example.mylittleapp.validation.OnPut;
 import org.example.mylittleapp.validation.annotations.UniqueTopic;
 import org.springframework.validation.annotation.Validated;
 
@@ -10,6 +11,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Validated
+@UniqueTopic(groups = {OnPost.class, OnPut.class})
 public class InputTopic implements Serializable {
 
   @Null(groups = OnPost.class)
@@ -18,12 +20,22 @@ public class InputTopic implements Serializable {
   @Positive(message = "This field requires a positive value.")
   private Integer order;
   @NotBlank(message = "This field is mandatory.")
-  @UniqueTopic(groups = OnPost.class)
   private String topic;
   @NotBlank(message = "This field is mandatory.")
   @Size(message = "Max 255 characters allowed.", max = 255)
   private String description;
   private List<@Valid @NotNull InputLesson> lessons;
+
+  public InputTopic(String id, Integer order, String topic, String description, List<@Valid @NotNull InputLesson> lessons) {
+    this.id = id;
+    this.order = order;
+    this.topic = topic;
+    this.description = description;
+    this.lessons = lessons;
+  }
+
+  public InputTopic() {
+  }
 
   public String getId() {
     return id;
