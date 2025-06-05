@@ -1,10 +1,10 @@
 package org.example.mylittleapp.api;
 
-import jakarta.validation.Valid;
 import org.example.mylittleapp.model.dto.Markdown;
 import org.example.mylittleapp.model.input.InputMarkdown;
 import org.example.mylittleapp.service.MarkdownService;
 import org.example.mylittleapp.validation.OnPost;
+import org.example.mylittleapp.validation.OnPut;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +18,9 @@ public class MarkdownController {
 
   private final MarkdownService markdownService;
 
-
-
   public MarkdownController(MarkdownService markdownService) {
     this.markdownService = markdownService;
-  }
+	}
 
   @GetMapping()
   public ResponseEntity<List<Markdown>> getMarkdown() {
@@ -30,7 +28,7 @@ public class MarkdownController {
   }
 
   @PostMapping()
-  public ResponseEntity<Markdown> createMarkdown(@RequestBody @Validated(OnPost.class) @Valid InputMarkdown markdown) {
+  public ResponseEntity<InputMarkdown> createMarkdown(@RequestBody @Validated(OnPost.class) InputMarkdown markdown) {
     return ResponseEntity.ok(markdownService.save(markdown));
   }
 
@@ -40,9 +38,9 @@ public class MarkdownController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Markdown> updateMarkdown(
+  public ResponseEntity<InputMarkdown> updateMarkdown(
       @PathVariable String id,
-      @RequestBody @Validated(OnPost.class) @Valid InputMarkdown markdown) {
+      @RequestBody @Validated(OnPut.class) InputMarkdown markdown) {
     markdown.setId(id);
     return ResponseEntity.ok(markdownService.save(markdown));
   }
