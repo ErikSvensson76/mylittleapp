@@ -1,10 +1,10 @@
 package org.example.mylittleapp.api;
 
-import jakarta.validation.Valid;
 import org.example.mylittleapp.model.dto.Lesson;
 import org.example.mylittleapp.model.input.InputLesson;
 import org.example.mylittleapp.service.LessonService;
 import org.example.mylittleapp.validation.OnPost;
+import org.example.mylittleapp.validation.OnPut;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +28,7 @@ public class LessonController {
   }
 
   @PostMapping()
-  public ResponseEntity<Lesson> addLesson(@RequestBody @Validated(OnPost.class) @Valid InputLesson lesson) {
+  public ResponseEntity<InputLesson> addLesson(@RequestBody @Validated(OnPost.class) InputLesson lesson) {
     return ResponseEntity.ok(lessonService.save(lesson));
   }
 
@@ -38,9 +38,9 @@ public class LessonController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Lesson> updateLesson(
+  public ResponseEntity<InputLesson> updateLesson(
       @PathVariable String id,
-      @RequestBody @Validated(OnPost.class) @Valid InputLesson lesson) {
+      @RequestBody @Validated(OnPut.class) InputLesson lesson) {
     lesson.setId(id);
     return ResponseEntity.ok(lessonService.save(lesson));
   }
